@@ -788,11 +788,9 @@ function addNodeAtDepthAndIndex({
       });
 
       if ('insertedTreeIndex' in mapResult) {
-        ({
-          insertedTreeIndex,
-          parentNode,
-          parentPath: pathFragment,
-        } = mapResult);
+        insertedTreeIndex = mapResult.insertedTreeIndex;
+        pathFragment = mapResult.parentPath;
+        parentNode = mapResult.parentNode;
       }
 
       childIndex = mapResult.nextIndex;

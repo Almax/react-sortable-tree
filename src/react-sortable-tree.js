@@ -163,7 +163,6 @@ class ReactSortableTree extends Component {
       treeData,
       node: targetNode,
       expanded: !targetNode.expanded,
-      path,
     });
   }
 
@@ -417,11 +416,15 @@ class ReactSortableTree extends Component {
     listIndex,
     style,
     getPrevRow,
-    matchKeys
+    matchKeys,
+    tickerStyle,
+    tickerClass,
+    handleClass
   ) {
     const {
       canDrag,
       generateNodeProps,
+      generateAdvancedNodeProps,
       scaffoldBlockPxWidth,
       searchFocusOffset,
     } = this.props;
@@ -443,6 +446,9 @@ class ReactSortableTree extends Component {
     const nodeProps = !generateNodeProps
       ? {}
       : generateNodeProps(callbackParams);
+    const advNodeProps = !generateAdvancedNodeProps
+      ? {}
+      : generateAdvancedNodeProps(callbackParams);
     const rowCanDrag =
       typeof canDrag !== 'function' ? canDrag : canDrag(callbackParams);
 
@@ -450,9 +456,9 @@ class ReactSortableTree extends Component {
       treeIndex,
       scaffoldBlockPxWidth,
       node,
-      path,
+      path 
     };
-
+    console.log(tickerStyle,  "treeNodeRenderer");
     return (
       <TreeNodeRenderer
         style={style}
@@ -466,6 +472,9 @@ class ReactSortableTree extends Component {
         {...sharedProps}
       >
         <NodeContentRenderer
+          tickerStyle={tickerStyle}
+          tickerClass={tickerClass}
+          handleClass={handleClass}
           parentNode={parentNode}
           isSearchMatch={isSearchMatch}
           isSearchFocus={isSearchFocus}
@@ -473,6 +482,7 @@ class ReactSortableTree extends Component {
           toggleChildrenVisibility={this.toggleChildrenVisibility}
           {...sharedProps}
           {...nodeProps}
+          {...advNodeProps}
         />
       </TreeNodeRenderer>
     );
@@ -485,6 +495,9 @@ class ReactSortableTree extends Component {
       innerStyle,
       rowHeight,
       isVirtualized,
+      tickerStyle,
+      tickerClass,
+      handleClass
     } = this.props;
     const { rows, searchMatches, searchFocusTreeIndex } = this.state;
 
@@ -536,13 +549,16 @@ class ReactSortableTree extends Component {
                 typeof rowHeight !== 'function' ? rowHeight : undefined
               }
               rowHeight={rowHeight}
-              rowRenderer={({ index, style: rowStyle }) =>
+              rowRenderer={({ index, style: rowStyle }) => 
                 this.renderRow(
                   rows[index],
                   index,
                   rowStyle,
                   () => rows[index - 1] || null,
-                  matchKeys
+                  matchKeys,
+                  tickerStyle,
+                  tickerClass,
+                  handleClass
                 )}
               {...this.props.reactVirtualizedListProps}
             />
@@ -589,7 +605,10 @@ ReactSortableTree.propTypes = {
 
   // Style applied to the container wrapping the tree (style defaults to {height: '100%'})
   style: PropTypes.shape({}),
+  tickerStyle: PropTypes.shape({}),
 
+  tickerClass: PropTypes.string,
+  handleClass: PropTypes.string,
   // Class name for the container wrapping the tree
   className: PropTypes.string,
 
@@ -602,7 +621,7 @@ ReactSortableTree.propTypes = {
   rowHeight: PropTypes.oneOfType([PropTypes.number, PropTypes.func]),
 
   // Size in px of the region near the edges that initiates scrolling on dragover
-  slideRegionSize: PropTypes.number,
+  slideRegionSize: PropTypes.number.isRequired, // eslint-disable-line react/no-unused-prop-types
 
   // Custom properties to hand to the react-virtualized list
   // https://github.com/bvaughn/react-virtualized/blob/master/docs/List.md#prop-types
@@ -612,13 +631,13 @@ ReactSortableTree.propTypes = {
   scaffoldBlockPxWidth: PropTypes.number,
 
   // Maximum depth nodes can be inserted at. Defaults to infinite.
-  maxDepth: PropTypes.number,
+  maxDepth: PropTypes.number, // eslint-disable-line react/no-unused-prop-types
 
   // The method used to search nodes.
   // Defaults to a function that uses the `searchQuery` string to search for nodes with
   // matching `title` or `subtitle` values.
   // NOTE: Changing `searchMethod` will not update the search, but changing the `searchQuery` will.
-  searchMethod: PropTypes.func,
+  searchMethod: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
 
   // Used by the `searchMethod` to highlight and scroll to matched nodes.
   // Should be a string for the default `searchMethod`, but can be anything when using a custom search.
@@ -628,12 +647,13 @@ ReactSortableTree.propTypes = {
   searchFocusOffset: PropTypes.number,
 
   // Get the nodes that match the search criteria. Used for counting total matches, etc.
-  searchFinishCallback: PropTypes.func,
+  searchFinishCallback: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
 
   // Generate an object with additional props to be passed to the node renderer.
   // Use this for adding buttons via the `buttons` key,
   // or additional `style` / `className` settings.
   generateNodeProps: PropTypes.func,
+  generateAdvancedNodeProps: PropTypes.func,
 
   // Set to false to disable virtualization.
   // NOTE: Auto-scrolling while dragging, and scrolling to the `searchFocusOffset` will be disabled.
@@ -667,7 +687,7 @@ ReactSortableTree.propTypes = {
   canDrag: PropTypes.oneOfType([PropTypes.func, PropTypes.bool]),
 
   // Determine whether a node can be dropped based on its path and parents'.
-  canDrop: PropTypes.func,
+  canDrop: PropTypes.func, // eslint-disable-line react/no-unused-prop-types
 
   // When true, or a callback returning true, dropping nodes to react-dnd
   // drop targets outside of this tree will not remove them from this tree
@@ -686,8 +706,11 @@ ReactSortableTree.defaultProps = {
   canDrag: true,
   canDrop: null,
   className: '',
+  tickerClass: '',
+  handleClass: '',
   dndType: null,
   generateNodeProps: null,
+  generateAdvancedNodeProps: null,
   getNodeKey: defaultGetNodeKey,
   innerStyle: {},
   isVirtualized: true,
@@ -706,6 +729,7 @@ ReactSortableTree.defaultProps = {
   shouldCopyOnOutsideDrop: false,
   slideRegionSize: 100,
   style: {},
+  tickerStyle: {}
 };
 
 ReactSortableTree.contextTypes = {

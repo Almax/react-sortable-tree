@@ -37,6 +37,10 @@ class NodeRendererDefault extends Component {
       buttons,
       className,
       style,
+      tickerStyle,
+      tickerClass,
+      handleClass,
+      arrowButtons,
       didDrop,
       isOver, // Not needed, but preserved for other renderers
       parentNode, // Needed for dndManager
@@ -44,7 +48,7 @@ class NodeRendererDefault extends Component {
     } = this.props;
     const nodeTitle = title || node.title;
     const nodeSubtitle = subtitle || node.subtitle;
-
+    console.log(  "tNo``````````````````````derer",tickerStyle);
     let handle;
     if (canDrag) {
       if (typeof node.children === 'function' && node.expanded) {
@@ -70,7 +74,7 @@ class NodeRendererDefault extends Component {
         );
       } else {
         // Show the handle used to initiate a drag-and-drop
-        handle = connectDragSource(<div className={styles.moveHandle} />, {
+        handle = connectDragSource(<div className={!handleClass?styles.moveHandle:handleClass}></div>, {
           dropEffect: 'copy',
         });
       }
@@ -130,7 +134,14 @@ class NodeRendererDefault extends Component {
               }}
             >
               {handle}
-
+              <div className={tickerClass} style={tickerStyle}>
+                {arrowButtons.map((btn, index) => (
+                  <div key={index} >
+                    {btn}
+                  </div>
+                  )
+                )}
+              </div>
               <div
                 className={
                   styles.rowContents +
@@ -191,8 +202,13 @@ NodeRendererDefault.defaultProps = {
   canDrag: false,
   toggleChildrenVisibility: null,
   buttons: [],
+  arrowButtons: [],
   className: '',
+  handleClass: '',
+  tickerClass: '',
+  tickerClass:'',
   style: {},
+  tickerStyle: {},
   parentNode: null,
   draggedNode: null,
   canDrop: false,
@@ -214,8 +230,12 @@ NodeRendererDefault.propTypes = {
   scaffoldBlockPxWidth: PropTypes.number.isRequired,
   toggleChildrenVisibility: PropTypes.func,
   buttons: PropTypes.arrayOf(PropTypes.node),
+  arrowButtons: PropTypes.arrayOf(PropTypes.node),
   className: PropTypes.string,
+  tickerClass: PropTypes.string,
+  handleClass: PropTypes.string,
   style: PropTypes.shape({}),
+  tickerStyle: PropTypes.shape({}),
 
   // Drag and drop API functions
   // Drag source

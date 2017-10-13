@@ -212,7 +212,7 @@ class App extends Component {
 
     const isVirtualized = true;
     const treeContainerStyle = isVirtualized ? { height: 450 } : {};
-
+    const tStyle = { border: '1px solid #ddd', width:'20px'};
     return (
       <div>
         <section className={styles['page-header']}>
@@ -271,6 +271,8 @@ class App extends Component {
           <div style={treeContainerStyle}>
             <SortableTree
               treeData={treeData}
+              tickerClass={styles['tickerDiv']}
+              handleClass={styles['mHandle']}
               onChange={this.updateTreeData}
               onMoveNode={({ node, treeIndex, path }) =>
                 global.console.debug(
@@ -304,6 +306,23 @@ class App extends Component {
                   >
                     ℹ
                   </button>,
+                ],
+              })}
+              generateAdvancedNodeProps={rowInfo => ({
+                arrowButtons: [
+                  <span
+                    style={{
+                      display: 'block',
+                    }}
+                    
+                  >
+                    ℹ
+                  </span>,
+                  <span
+                    style={{ display: 'block'}}                    
+                  >
+                    ℹ
+                  </span>,
                 ],
               })}
             />
